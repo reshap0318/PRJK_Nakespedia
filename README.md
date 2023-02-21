@@ -16,11 +16,11 @@ Sebelum melakukan instalasi, pastikan composer dan npm telah terinstall.
 
 1. Download source code dalam bentuk zip atau menggunakan git
 
-   `git clone https://github.com/reshap0318/staffScheduller.git staffSchedule`
+   `git clone https://github.com/reshap0318/PRJK_Nakespedia.git nakespedia`
 
-2. Buka file staffSchedule atau bisa dengan perintah
+2. Buka file nakespedia atau bisa dengan perintah
 
-    `cd staffSchedule`
+    `cd nakespedia`
 
 3. Copy file .env.example menjadi .env atau bisa dengan perintah
 
@@ -34,7 +34,7 @@ Sebelum melakukan instalasi, pastikan composer dan npm telah terinstall.
 
     `npm Install && npm run dev`
 
-6. Konfigurasi file `.env` terutama untuk database
+6. Konfigurasi file `.env` terutama untuk database dan email
 
 7. Buat key untuk aplikasi melalui perintah
 
@@ -46,32 +46,6 @@ Sebelum melakukan instalasi, pastikan composer dan npm telah terinstall.
 
 9. Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
-### Installasi Docker
-
-Sebelum melakukan instalasi, pastikan docker dan docker-compose sudah terinstall
-
-1. Download source code dalam bentuk zip atau menggunakan git
-
-   `git clone https://github.com/reshap0318/staffScheduller.git staffSchedule`
-
-2. Buka file staffSchedule atau bisa dengan perintah
-
-    `cd staffSchedule`
-
-3. Copy file .env.example menjadi .env atau bisa dengan perintah
-
-    `cp .env.example .env`
-
-4. Konfigurasi file `.env` terutama untuk database
-
-5. Run Docker File dengan perintah
-
-    `docker-compose up -d`
-
-6. Wait Docker Finish Build
-
-7. Open [http://127.0.0.1:8002/](http://127.0.0.1:8002/)
-
 ## user
-- email : darkrensahdenv@gmail.com
-- password : @dmin#123
+- email : admin@admin.com
+- password : admin
