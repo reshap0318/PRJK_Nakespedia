@@ -4,7 +4,7 @@
         <!--begin::Copyright-->
         <div class="text-dark order-2 order-md-1">
             <span class="text-muted fw-semibold me-1">{{ date('Y') }}&copy;</span>
-            {{-- <a href="http://reshap0318.github.io" target="_blank" class="text-gray-800 text-hover-primary">Reshap0318 <small>v.2.0</small></a> --}}
+            <a href="javascript:void(0)" target="_blank" class="text-gray-800 text-hover-primary">nakespedia <small>v.2.0</small></a>
         </div>
         <!--end::Copyright-->
         <!--begin::Menu-->
