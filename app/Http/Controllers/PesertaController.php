@@ -16,6 +16,8 @@ class PesertaController extends Controller
     public function index(Request $request)
     {
         if($request->tag == 'export') {
+            ini_set('max_execution_time', '1800'); //30mnt
+            ini_set('memory_limit', -1);
             return (new ExportsPesertaExport())
                 ->forIds($request->ids)
                 ->setRange($request->range)
@@ -57,10 +59,10 @@ class PesertaController extends Controller
         try {
             $data = PesertaModel::create($request->all());
         } catch (\Throwable $th) {
-            return redirect()->route('peserta.index')->with('error', 'gagal menambahkan data');    
+            return redirect()->route('peserta.index')->with('error', 'failed added data');    
         }
 
-        return redirect()->route('peserta.index')->with('success', 'berhasil menambahkan data');    
+        return redirect()->route('peserta.index')->with('success', 'successfully added data');    
     }
 
     public function edit(PesertaModel $peserta)
@@ -75,16 +77,16 @@ class PesertaController extends Controller
         try {
             $data = $request->all();
             $peserta->update($data);
-            return redirect()->route('peserta.index')->with('success', 'berhasil mengubah data');   
+            return redirect()->route('peserta.index')->with('success', 'successfully changed data');   
         } catch (\Throwable $th) {
-            return redirect()->route('peserta.index')->with('error', 'gagal mengubah data');   
+            return redirect()->route('peserta.index')->with('error', 'failed changed data');   
         }
     }
 
     public function destroy(PesertaModel $peserta)
     {
         $peserta->delete();
-        return redirect()->route('peserta.index')->with('success', 'berhasil menghapus data'); 
+        return redirect()->route('peserta.index')->with('success', 'successfully deleted data'); 
     }
 
     public function batchDestroy(Request $request)
@@ -92,7 +94,7 @@ class PesertaController extends Controller
         $ids = is_array($request->ids) ? $request->ids : explode(",", str_replace(" ", "", $request->ids));
         $ids = array_filter($ids);
         PesertaModel::whereIn('id', $ids)->delete();
-        return redirect()->route('peserta.index')->with('success', 'berhasil menghapus data'); 
+        return redirect()->route('peserta.index')->with('success', 'successfully deleted data'); 
     }
 
     public function import(Request $request)
@@ -106,6 +108,9 @@ class PesertaController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls'
         ]);
+        ini_set('max_execution_time', '1800'); //30mnt
+        ini_set('memory_limit', -1);
+
         
         $isPreview = $request->is_preview ?? 1;
         try {
@@ -128,17 +133,17 @@ class PesertaController extends Controller
                     array_push($errors, $merge);
                 }
             }
-            if($request->has('is_preview') && $isPreview == 1) return response()->json(['code' => 'xls', 'error' => $errors], 500);
-            return redirect()->back()->with('error', 'error menambahkan data');
+            if($request->has('is_preview') && $isPreview == 1) return response()->json(['code' => 'xls', 'message' => $errors, 'failures' => $failures], 500);
+            return redirect()->back()->with('error', 'error added data');
             
         } 
         catch (\Throwable $th) {
-            if($request->has('is_preview') && $isPreview == 1) return response()->json(['code' => 'err', 'error' => $th->getMessage()], 500);
-            return redirect()->back()->with('error', 'error menambahkan data');
+            if($request->has('is_preview') && $isPreview == 1) return response()->json(['code' => 'err', 'message' => $th->getMessage()], 500);
+            return redirect()->back()->with('error', 'error added data');
         }
 
         if($request->has('is_preview') && $isPreview == 1) return response()->json(['code' => 200, 'msg' => 'oke'], 200);
-        return redirect()->route('peserta.index')->with('success', 'berhasil menambahkan data');
+        return redirect()->route('peserta.index')->with('success', 'successfully added data');
     }
 
     public function homepage()

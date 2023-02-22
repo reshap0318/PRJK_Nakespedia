@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\PesertaModel;
 use Maatwebsite\Excel\Concerns\{
     FromQuery,
+    FromCollection,
     Exportable,
     WithHeadings, 
     WithMapping,
@@ -16,7 +17,7 @@ use PhpOffice\PhpSpreadsheet\{
     Style\Alignment,
 };
 
-class PesertaExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
+class PesertaExport implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles
 {
     use Exportable;
 
@@ -25,20 +26,19 @@ class PesertaExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
     public function forIds($ids)
     {
         $ids = is_array($ids) ? $ids : explode(",", str_replace(" ", "", $ids));
-        $ids = array_filter($ids);
-        $this->ids = $ids;
+        $this->ids = array_filter($ids);
         return $this;
     }
 
     public function setRange($range)
     {
         $split = is_array($range) ? $range : array_filter(explode("-",str_replace(" ", "", $range)));
-        $this->skip  = (int) ($split[0] ?? 0);
+        $this->skip  = (int) ($split[0] ?? 0) - 1;
         $this->limit = (int) ($split[1] ?? 0);
         return $this;
     }
 
-    public function query()
+    public function collection()
     {
         return PesertaModel::with([
             'userUpload' => function($q)
@@ -53,7 +53,8 @@ class PesertaExport implements FromQuery, WithHeadings, WithMapping, ShouldAutoS
         ->when($this->limit > 0,function($q)
         {
             return $q->skip($this->skip)->limit($this->limit);
-        });
+        })
+        ->get();
     }
 
     public function map($data): array

@@ -1,5 +1,5 @@
 <x-template-layout>
-    @slot('title') peserta import @endslot
+    @slot('title') Participant import @endslot
 
     @slot('css_template')
         <link href="{{ asset('template/assets/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
@@ -19,7 +19,7 @@
                             <rect x="4.36396" y="11.364" width="16" height="2" rx="1" fill="currentColor" />
                         </svg>
                     </span>
-                    <h2>Import Peserta</h2>
+                    <h2>Import Participant</h2>
                 </div>
             </div>
             <div class="card-body pt-5">
@@ -28,7 +28,7 @@
                     <x-validation-error name="file"></x-validation-error>
                 </div>
                 <div class="d-flex justify-content-between">
-                    <a href="{{ route('peserta.import', ['tag' => 'template']) }}" type="reset" class="btn btn-primary me-3">Template</a>
+                    <a href="{{ route('peserta.import', ['tag' => 'template']) }}" type="reset" class="btn btn-primary me-3">Download Template</a>
                     <div class="text-end">
                         <a href="{{ route('peserta.index') }}" type="reset" class="btn btn-light me-md-3 d-inline-block">Cancel</a>
                         <button type="button" class="btn btn-primary d-inline-block" id="btn-preview">
@@ -137,6 +137,7 @@
                             $('#btn-save').show();
                         },
                         error: function(jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR);
                             if(jqXHR.status == 422){
                                 if('file' in jqXHR.responseJSON.errors){
                                     let error = jqXHR.responseJSON.errors.file.at(-1);
@@ -144,7 +145,7 @@
                                 }
                             }else if(jqXHR.status == 500){
                                 if(jqXHR.responseJSON.code == 'xls'){
-                                    let error = jqXHR.responseJSON.error;
+                                    let error = jqXHR.responseJSON.message;
 
                                     table.clear().draw();
                                     table.rows.add(error).draw();
@@ -160,9 +161,13 @@
                                     $('#view_error').removeClass('d-none');
                                 }
                                 else {
-                                    let error = jqXHR.responseJSON.error;
+                                    let error = jqXHR.responseJSON.message;
                                     $('#error_file').html(error);
                                 }
+                            }
+                            else {
+                                let error = jqXHR.responseJSON.message;
+                                $('#error_file').html(error);
                             }
                         },
                         complete: function (data) {

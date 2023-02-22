@@ -47,5 +47,5 @@ Sebelum melakukan instalasi, pastikan composer dan npm telah terinstall.
 9. Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ## user
-- email : admin@admin.com
-- password : admin
+- username : su@dmin
+- password : su@dmin

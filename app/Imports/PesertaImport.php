@@ -11,10 +11,11 @@ use Maatwebsite\Excel\Concerns\{
     WithValidation,
     WithHeadingRow,
     WithBatchInserts,
-    SkipsEmptyRows
+    SkipsEmptyRows,
+    WithChunkReading
 };
 
-class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatchInserts, SkipsEmptyRows
+class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatchInserts, WithChunkReading, SkipsEmptyRows
 {
     use Importable;
 
@@ -38,7 +39,14 @@ class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatc
 
     public function batchSize(): int
     {
-        return 300;
+        if($this->isPreview) return 20000;
+        return 1000;
+    }
+
+    public function chunkSize(): int
+    {
+        if($this->isPreview) return 20000;
+        return 1000;
     }
 
     public function rules(): array
@@ -69,7 +77,7 @@ class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatc
 
     public function prepareForValidation($data, $index)
     {
-        $data['no_reg'] = trim($data['no_reg']);
+        $data['no_reg'] = trim($data['no_reg'] ?? null);
         
         return $data;
     }

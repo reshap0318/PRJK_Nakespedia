@@ -88,9 +88,11 @@
                     <thead>
                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
                             <th class="w-10px pe-2" data-priority="1">
+                                @if (Auth::user()->is_admin)
                                 <div class="form-check form-check-sm form-check-custom form-check-solid">
                                     <input class="form-check-input" type="checkbox" value="1" id="select_all"/>
                                 </div>
+                                @endif
                             </th>
                             <th class="min-w-100px" data-priority="2">Registration Number</th>
                             <th class="min-w-200px" data-priority="3">Name</th>
@@ -139,7 +141,7 @@
                     'processing': true,
                     "serverSide": true,
                     "pageLength": 10,
-                    order: [[1, 'asc']],
+                    order: [[6, 'desc']],
                     lengthMenu: [
                         [10, 25, 50, 100, 1000],
                         [10, 25, 50, 100, 1000],
@@ -218,6 +220,13 @@
                                 return action;
                             }
                         },
+                        { 
+                            data: 'created_at',
+                            data: 'created_at',
+                            searchable: false,
+                            visible: false,
+                        },
+
                     ],
                     "drawCallback": function( settings, start, end, max, total, pre ) {
                         $('#data_total').html(this.fnSettings().fnRecordsTotal())
@@ -309,8 +318,9 @@
                     let lastMaxCard = 20000, lastMinCard = 0;
                     while (totalRecord > 0) {
                         let range = `${lastMinCard + 1} - ${lastMaxCard}`;
+                        
                         $('#modal_split_download .row-split').append(`
-                            <div class="col-md-3 my-1">
+                            <div class="col-md-4 my-1">
                                 <div class="d-flex justify-content-center">
                                     <button type="button" class="btn btn-primary btn-range" data-range="${range}">${range}</button>
                                 </div>                        
@@ -318,7 +328,7 @@
                         `)
                         totalRecord -= 20000;
                         lastMinCard += lastMaxCard;
-                        lastMaxCard += (totalRecord > 20000 ? lastMaxCard : totalRecord)
+                        lastMaxCard += (totalRecord > 20000 ? lastMaxCard : totalRecord);
                     }
                     $('#modal_split_download').modal('show');
 
