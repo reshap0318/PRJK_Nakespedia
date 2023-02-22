@@ -63,10 +63,10 @@ class UserController extends Controller
                 $user->update();
             }
         } catch (\Throwable $th) {
-            return redirect()->route('user.index')->with('error', 'gagal menambahkan data');    
+            return redirect()->route('user.index')->with('error', 'failed created data');    
         }
 
-        return redirect()->route('user.index');
+        return redirect()->route('user.index')->with('success', 'successfully created data');   
     }
 
     public function edit(User $user)
@@ -91,9 +91,9 @@ class UserController extends Controller
                 $user->avatar_path = $avatar;
                 $user->update();
             }
-            return redirect()->route('user.index')->with('success', 'berhasil mengubah data');   
+            return redirect()->route('user.index')->with('success', 'successfully changed data');   
         } catch (\Throwable $th) {
-            return redirect()->route('user.index')->with('error', 'gagal mengubah data');   
+            return redirect()->route('user.index')->with('error', 'failed changed data');   
         }
     }
 
@@ -102,9 +102,9 @@ class UserController extends Controller
         try {
             $user->delete();
             if($user->avatar_path) Storage::delete($user->avatar_path);
-            return redirect()->route('user.index')->with('success', 'berhasil menghapus data'); 
+            return redirect()->route('user.index')->with('success', 'successfully deleted data'); 
         } catch (\Throwable $th) {
-            return redirect()->route('user.index')->with('error', 'tidak bisa menghapus data'); 
+            return redirect()->route('user.index')->with('error', 'tidak bisa deleted data'); 
         }
     }
 }

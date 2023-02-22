@@ -37,9 +37,9 @@ class ProfileController extends Controller
                 $user->avatar_path = $avatar;
                 $user->update();
             }
-            return redirect()->route('home')->with('success', 'berhasil mengubah data');   
+            return redirect()->route('home')->with('success', 'successfully changed data');   
         } catch (\Throwable $th) {
-            return redirect()->route('home')->with('error', 'gagal mengubah data');   
+            return redirect()->route('home')->with('error', 'failed cahnged data');   
         }
     }
 }
