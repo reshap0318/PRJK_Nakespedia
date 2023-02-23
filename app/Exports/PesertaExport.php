@@ -46,6 +46,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping, Should
                 return $q->select(['id', 'name']);
             }
         ])
+        ->orderBy('created_at', 'desc')
         ->when($this->ids,function($q)
         {
             return $q->whereIn('id', $this->ids);
@@ -57,6 +58,11 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping, Should
         ->get();
     }
 
+    public function getCollection()
+    {
+        return $this->collection();
+    }
+
     public function map($data): array
     {
         return [
@@ -64,6 +70,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping, Should
             $data->name,
             $data->origin,
             $data->event_title,
+            route('homepage.data', ['no_req' => $data->no_reg]),
             $data->userUpload->name,
             $data->created_at
         ];
@@ -76,6 +83,7 @@ class PesertaExport implements FromCollection, WithHeadings, WithMapping, Should
             'Name',
             'Origin',
             'Event Title',
+            'URL',
             'Created By',
             'Created At'
         ];

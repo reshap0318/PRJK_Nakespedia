@@ -178,77 +178,23 @@
                                                 <button type="submit" class="btn position-absolute btn-search px-8">Search</button>
                                             </div>
                                         </div>
-                                        <div id="card-result">
-                                            @if ($data)
-                                                <div class="card" style="max-width: 760px;">
-                                                    <div class="card-body card-result">
-                                                        <div class="row">
-                                                            <div class="col-10">
-                                                                <div class="d-flex justify-content-center" id="form-result">
-                                                                    <div class="d-flex align-items-center">
-                                                                        Your Data Found
-                                                                        <img src="{{ asset('custom/icons/verified-rounded.svg') }}" alt="nakespedia verified" width="25" class="ps-2">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="pt-2" id="result-table">
-                                                                    <table class="result-table">
-                                                                        <tr>
-                                                                            <td>Registration</td>
-                                                                            <td>&ensp;:&ensp;</td>
-                                                                            <td>{{ $data->no_reg }}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Name</td>
-                                                                            <td>&ensp;:&ensp;</td>
-                                                                            <td>{{ $data->name }}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td>Origin</td>
-                                                                            <td>&ensp;:&ensp;</td>
-                                                                            <td>{{ $data->origin }}</td>
-                                                                        </tr>
-                                                                        <tr>
-                                                                            <td style="vertical-align:top">Event Title</td>
-                                                                            <td style="vertical-align:top">&ensp;:&ensp;</td>
-                                                                            <td style="text-align: justify;text-justify: inter-word;">
-                                                                                {{ $data->event_title }}
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @elseif (Session::has('error'))
-                                                <div class="card" style="max-width: 760px;">
-                                                    <div class="card-body card-result bg-danger">
-                                                        <div class="row">
-                                                            <div class="col-12 text-center">
-                                                                {{ Session::get('error') }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @else
-                                                <div class="d-flex align-items-center position-relative my-4 text-information">
-                                                    Input your last 6 digit certificate registration number <br>
-                                                    (Tuliskan 6 digit terakhir nomor registrasi sertifikat anda)
-                                                </div>
-                                            @endif
-                                        </div>
-
                                         <div class="card d-none" style="max-width: 760px;">
-                                            <div class="card-body card-result bg-danger" id="card-result-error">
-                                                <div class="row">
-                                                    <div class="col-12 text-center">
-                                                        Please Enter Registration Number!
+                                            <div class="card-body card-result" id="card-result">
+                                                <div class="d-flex justify-content-center" id="form-result">
+                                                    <div class="d-flex align-items-center">
+                                                        Your Data Found
+                                                        <img src="{{ asset('custom/icons/verified-rounded.svg') }}" alt="nakespedia verified" width="25" class="ps-2">
                                                     </div>
                                                 </div>
+                                                <div class="pt-2" id="result-table"></div>
                                             </div>
                                         </div>
+                                        <div class="d-flex align-items-center position-relative my-4 text-information" id="txt-information-input">
+                                            Input your last 6 digit certificate registration number <br>
+                                            (Tuliskan 6 digit terakhir nomor registrasi sertifikat anda)
+                                        </div>
                                         <div class="text-center mt-3">
-                                            <a href="{{ route('homepage.index') }}" class="btn btn-danger" id="btn_reset">Reset</a>
+                                            <button type="button" class="btn btn-danger" id="btn_reset">Reset</button>
                                         </div>
                                     </form>
                                 </div>
@@ -268,21 +214,112 @@
     <script src="{{ asset('template/assets/js/scripts.bundle.js') }}"></script>
 
     <script>
+        function wrap(s, w) {
+            let arr = [];
+            while (s.length > 0) {
+                arr.push(s.substring(0, w));
+                s = s.substring(w);
+            }
+            return arr
+        };
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                'Accept': 'application/json' 
+            }
+        });
 
         $('#form-search').on('submit', function(e){
             e.preventDefault();
             let input = $('#input-search').val();
+            $('#card-result').removeClass('bg-danger').parent().removeClass('d-none');
+            $('#txt-information-input').addClass('d-none');
+            $('#result-table').html('');
 
-            let urlSearch = "{{ route('homepage.data', 'xxxxxxxxxx') }}"
             if(input == "")
             {
-                $('#card-result').addClass('d-none')
-                $('#card-result-error').addClass('bg-danger').parent().removeClass('d-none');
+                $('#card-result').addClass('bg-danger');
+                $('#form-result').html('Please Enter Registration Number!');
             }
             else {
-                location.href = urlSearch.replace('xxxxxxxxxx', input)
+                $('#form-result').html('Waiting...');
+                let url = "{{ route('homepage.data') }}"
+
+                let data = $(this).serializeArray().reduce(function(a, x) { a[x.name] = x.value; return a; }, {});
+    
+                $.ajax({
+                    url : url,
+                    dataType : 'json',
+                    type: 'POST',
+                    data: data
+                })
+                .done(res => {
+                    let data = res.data;
+                    let imgVerified = "{{ asset('custom/icons/verified-rounded.svg') }}";
+                    $('#form-result').html(`
+                        <div class="d-flex align-items-center">
+                            Your Data Found
+                            <img src="${imgVerified}" alt="nakespedia verified" width="25" class="ps-2">
+                        </div>
+                    `);
+                    $('#result-table').html(`
+                        <table class="result-table">
+                            <tr>
+                                <td>Registration</td>
+                                <td>&ensp;:&ensp;</td>
+                                <td>${data.no_reg}</td>
+                            </tr>
+                            <tr>
+                                <td>Name</td>
+                                <td>&ensp;:&ensp;</td>
+                                <td>${data.name}</td>
+                            </tr>
+                            <tr>
+                                <td>Origin</td>
+                                <td>&ensp;:&ensp;</td>
+                                <td>${data.origin}</td>
+                            </tr>
+                            <tr>
+                                <td style="vertical-align:top">Event Title</td>
+                                <td style="vertical-align:top">&ensp;:&ensp;</td>
+                                <td style="text-align: justify;text-justify: inter-word;">
+                                    ${data.event_title}
+                                </td>
+                            </tr>
+                        </table>
+                    `);
+
+                    $('#card-result').parent().css('margin-left', '32px').css('margin-right', '32px');
+                })
+                .fail(xhr => {
+                    $('#card-result').parent().css('margin-left', '0px').css('margin-right', '0px');
+                    if (xhr.status == 404) {
+                        $('#card-result').addClass('bg-danger');
+                        $('#form-result').html('Your Data Not Found!');
+                    }
+                    else if (xhr.status == 422) {
+                        $('#card-result').addClass('bg-danger');
+                        $('#form-result').html('Please Enter Registration Number!');
+                    }
+                    else if (xhr.status == 500) {
+                        $('#card-result').addClass('bg-danger');
+                        $('#form-result').html('Internal Server Error!');
+                    }
+                    else {
+                        $('#card-result').addClass('bg-danger');
+                        $('#form-result').html('Please Reload The Page!');
+                    }
+                });
             }
 
+        });        
+
+        $('#btn_reset').on('click', function(e) {
+            $('#result-table').html('');
+            $('#input-search').val('')
+            $('#card-result').removeClass('bg-danger').parent().addClass('d-none');
+            $('#txt-information-input').removeClass('d-none');
         });
     </script>
 </body>

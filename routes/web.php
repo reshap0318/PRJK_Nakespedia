@@ -36,4 +36,4 @@ Route::view('500', "errors.500");
 
 
 Route::get('/', [PesertaController::class, 'homepage'])->name('homepage.index');
-Route::post('/homepage-search', [PesertaController::class, 'homepageData'])->name('homepage.data');
+Route::get('/data/{no_req}', [PesertaController::class, 'homepageData'])->name('homepage.data');

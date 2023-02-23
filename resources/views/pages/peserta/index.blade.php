@@ -110,7 +110,7 @@
     <div class="modal fade" id="modal_split_download" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered mw-650px">
             <div class="modal-content">
-                <div class="modal-header">
+                <div class="modal-header justify-content-center">
                     <h5 class="modal-title">Select Download Range</h5>
                 </div>
                 <div class="modal-body">
@@ -136,6 +136,7 @@
         <script>
             $(document).ready(function() {
                 let selectedData = [], ignoreData = [];
+                let rangeMaxExport = 2000;
                 var table = customDataTable('tbl_peserta', {
                     responsive: true,
                     'processing': true,
@@ -288,7 +289,7 @@
 
                 $('#btn-export').on('click', function(e) {
                     let totalRecord = table.page.info().recordsTotal;
-                    if(totalRecord > 20000)
+                    if(totalRecord > rangeMaxExport)
                     {
                         e.preventDefault();
                         splitDownload(totalRecord)
@@ -315,20 +316,20 @@
                 function splitDownload(totalRecord) 
                 {
                     $('#modal_split_download .row.justify-content-center').html('');
-                    let lastMaxCard = 20000, lastMinCard = 0;
+                    let lastMaxCard = rangeMaxExport, lastMinCard = 0;
                     while (totalRecord > 0) {
                         let range = `${lastMinCard + 1} - ${lastMaxCard}`;
                         
                         $('#modal_split_download .row-split').append(`
                             <div class="col-md-4 my-1">
-                                <div class="d-flex justify-content-center">
+                                <div class="d-grid gap-2">
                                     <button type="button" class="btn btn-primary btn-range" data-range="${range}">${range}</button>
                                 </div>                        
                             </div>
                         `)
-                        totalRecord -= 20000;
+                        totalRecord -= rangeMaxExport;
                         lastMinCard += lastMaxCard;
-                        lastMaxCard += (totalRecord > 20000 ? lastMaxCard : totalRecord);
+                        lastMaxCard += (totalRecord > rangeMaxExport ? lastMaxCard : totalRecord);
                     }
                     $('#modal_split_download').modal('show');
 

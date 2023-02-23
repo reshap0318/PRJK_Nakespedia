@@ -14,6 +14,8 @@ use Maatwebsite\Excel\Concerns\{
     SkipsEmptyRows,
     WithChunkReading
 };
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Storage;
 
 class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatchInserts, WithChunkReading, SkipsEmptyRows
 {
@@ -28,6 +30,10 @@ class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatc
     public function model(array $row)
     {
         if($this->isPreview) return;
+        
+        $noReg = $row['no_reg'];
+        generateQrCode($noReg);
+        
         return new PesertaModel([
             'no_reg'        => $row['no_reg'],
             'name'          => $row['name'],
@@ -39,14 +45,14 @@ class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatc
 
     public function batchSize(): int
     {
-        if($this->isPreview) return 20000;
-        return 1000;
+        if($this->isPreview) return 10000;
+        return 500;
     }
 
     public function chunkSize(): int
     {
-        if($this->isPreview) return 20000;
-        return 1000;
+        if($this->isPreview) return 10000;
+        return 500;
     }
 
     public function rules(): array

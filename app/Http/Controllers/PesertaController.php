@@ -9,19 +9,17 @@ use App\Imports\PesertaImport;
 use App\Models\PesertaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use ZipArchive;
 
 class PesertaController extends Controller
 {
     public function index(Request $request)
     {
         if($request->tag == 'export') {
-            ini_set('max_execution_time', '1800'); //30mnt
-            ini_set('memory_limit', -1);
-            return (new ExportsPesertaExport())
-                ->forIds($request->ids)
-                ->setRange($request->range)
-                ->download('data peserta '.date('Y-m-d').".xlsx");
+            return $this->download($request->ids, $request->range);
         }
         return view('pages.peserta.index');
     }
@@ -58,6 +56,7 @@ class PesertaController extends Controller
     {
         try {
             $data = PesertaModel::create($request->all());
+            generateQrCode($data->no_reg);
         } catch (\Throwable $th) {
             return redirect()->route('peserta.index')->with('error', 'failed added data');    
         }
@@ -77,6 +76,7 @@ class PesertaController extends Controller
         try {
             $data = $request->all();
             $peserta->update($data);
+            generateQrCode($peserta->no_reg);
             return redirect()->route('peserta.index')->with('success', 'successfully changed data');   
         } catch (\Throwable $th) {
             return redirect()->route('peserta.index')->with('error', 'failed changed data');   
@@ -148,14 +148,53 @@ class PesertaController extends Controller
 
     public function homepage()
     {
-        return view('pages.homepage.index');
+        return view('pages.homepage.index', ['data' => null]);
     }
 
-    public function homepageData(Request $request)
+    public function homepageData($no_reg)
     {
-        $request->validate(['no_reg' => 'required']);
-        $data = PesertaModel::where('no_reg', $request->no_reg)->first();
-        if(!$data) return response()->json(['code' => 404, 'error' => "data not found"], 404);
-        return response()->json(['code' => 200, 'data' => $data], 200);
+        $data = PesertaModel::where('no_reg', $no_reg)->first();
+        if(!$data) return redirect(route('homepage.index'))->with('error', 'data not foud');
+
+        return view('pages.homepage.index', ['data' => $data]);
+    }
+
+    public function download($ids = null, $range = null)
+    {
+        ini_set('max_execution_time', '1800'); //30mnt
+        ini_set('memory_limit', -1);
+
+        $path = "extract";
+        Storage::deleteDirectory($path);
+        if(!Storage::directoryExists($path)) Storage::makeDirectory($path);
+
+        $zip = new ZipArchive;
+        $fileName = $path.'/data peserta '.date('Y-m-d').($range ? " range ".$range : "").".zip";
+
+        if ($zip->open(Storage::path($fileName), ZIPARCHIVE::CREATE )!==TRUE) {
+            return redirect()->back()->with('error', "can't download $fileName");
+        }
+
+        if ($zip->open(Storage::path($fileName), ZipArchive::CREATE) === TRUE)
+        {
+            $excelDown = (new ExportsPesertaExport())->forIds($ids)->setRange($range);
+
+            $zip->addFile(
+                $excelDown
+                    ->download('000-data-peserta.xlsx')
+                    ->getFile(),
+                '000-data-peserta.xlsx'
+            );
+
+            foreach ($excelDown->getCollection() as $item) {
+                $qrName = generateQrCode($item->no_reg);
+                $zip->addFile(
+                    Storage::path($qrName)
+                );
+            }
+
+            $zip->close();
+        }
+        return response()->download(Storage::path($fileName));       
     }
 }
