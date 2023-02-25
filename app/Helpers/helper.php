@@ -1,5 +1,9 @@
 <?php
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel\ErrorCorrectionLevelHigh;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Storage;
 
 function menuActive(Array $curentPaths, Array $exceptPath = [])
@@ -15,11 +19,18 @@ function menuActive(Array $curentPaths, Array $exceptPath = [])
 
 function generateQrCode($no_reg)
 {
-    $qrName = 'qrcode/'.$no_reg.".svg";
+    $qrName = 'qrcode/'.$no_reg.".png";
     if(!Storage::exists($qrName))
     {
-        $qr = QrCode::size(500)->generate(route('homepage.data', $no_reg));
-        Storage::put($qrName, $qr);
+        Builder::create()
+            ->writer(new PngWriter())
+            ->writerOptions([])
+            ->data(route('homepage.data', $no_reg))
+            ->encoding(new Encoding('UTF-8'))
+            ->errorCorrectionLevel(new ErrorCorrectionLevelHigh())
+            ->size(300)
+            ->build()
+            ->saveToFile(Storage::path($qrName));
     }
     return $qrName;
 }

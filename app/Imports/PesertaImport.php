@@ -14,8 +14,6 @@ use Maatwebsite\Excel\Concerns\{
     SkipsEmptyRows,
     WithChunkReading
 };
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
-use Illuminate\Support\Facades\Storage;
 
 class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatchInserts, WithChunkReading, SkipsEmptyRows
 {

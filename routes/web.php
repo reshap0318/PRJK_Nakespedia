@@ -12,7 +12,7 @@ Route::get('/home', function () {
 require __DIR__.'/auth.php';
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('admin',function() { return redirect('/login'); });
+    Route::get('admn',function() { return redirect('/login'); });
 
     Route::get('profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');

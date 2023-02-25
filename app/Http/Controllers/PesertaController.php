@@ -9,9 +9,9 @@ use App\Imports\PesertaImport;
 use App\Models\PesertaModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use ZipArchive;
 
 class PesertaController extends Controller
@@ -55,9 +55,12 @@ class PesertaController extends Controller
     public function store(PesertaRequest $request)
     {
         try {
+            DB::beginTransaction();
             $data = PesertaModel::create($request->all());
             generateQrCode($data->no_reg);
+            DB::commit();
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->route('peserta.index')->with('error', 'failed added data');    
         }
 
@@ -74,11 +77,14 @@ class PesertaController extends Controller
     public function update(PesertaRequest $request, PesertaModel $peserta)
     {
         try {
+            DB::beginTransaction();
             $data = $request->all();
             $peserta->update($data);
             generateQrCode($peserta->no_reg);
+            DB::commit();
             return redirect()->route('peserta.index')->with('success', 'successfully changed data');   
         } catch (\Throwable $th) {
+            DB::rollBack();
             return redirect()->route('peserta.index')->with('error', 'failed changed data');   
         }
     }
@@ -86,6 +92,8 @@ class PesertaController extends Controller
     public function destroy(PesertaModel $peserta)
     {
         $peserta->delete();
+        $qrName = 'qrcode/'.$peserta->no_reg.".png";
+        if(Storage::exists($qrName)) Storage::delete($qrName);
         return redirect()->route('peserta.index')->with('success', 'successfully deleted data'); 
     }
 
@@ -94,6 +102,10 @@ class PesertaController extends Controller
         $ids = is_array($request->ids) ? $request->ids : explode(",", str_replace(" ", "", $request->ids));
         $ids = array_filter($ids);
         PesertaModel::whereIn('id', $ids)->delete();
+        foreach (PesertaModel::whereIn('id', $ids)->get() as $peserta) {
+            $qrName = 'qrcode/'.$peserta->no_reg.".png";
+            if(Storage::exists($qrName)) Storage::delete($qrName);
+        }
         return redirect()->route('peserta.index')->with('success', 'successfully deleted data'); 
     }
 
