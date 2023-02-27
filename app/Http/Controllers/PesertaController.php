@@ -168,7 +168,7 @@ class PesertaController extends Controller
         $data = PesertaModel::where('no_reg', $no_reg)->first();
         if(!$data) return redirect(route('homepage.index'))->with('error', 'data not foud');
 
-        return view('pages.homepage.index', ['data' => $data]);
+        return view('pages.homepage.index', ['data' => $data, 'no_reg' => $no_reg]);
     }
 
     public function download($ids = null, $range = null)

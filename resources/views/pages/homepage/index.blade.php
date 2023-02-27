@@ -83,10 +83,55 @@
         .result-table {
             font-size:18px;
         }
+        
+        .nakespedia-title {
+            width: 92%;
+        }
 
-        @media screen and (min-width: 601px) {
+        @media screen and (min-width: 601px) and (max-width: 1024px) {
+
             .nakespedia-title {
                 width: 92%;
+            }
+
+            .sertifikat {
+                height:507.16px;
+                width:552px;
+                margin-top: 30px;
+            }
+
+            .text-information {
+                font-size:16px;
+                text-align:left; 
+                margin-left: 10px; 
+                margin-right:10px;
+            }
+
+            .form-search {
+                height: 60px;
+                width: 90%;
+                font-size: 16px;
+            }
+
+            .btn-search{
+                font-size: 14px;
+            }
+
+            .form-spacing {
+                margin-right: 30px;
+            }
+
+            .card-result {
+                font-size: 18px;
+                margin-left: 0px !important; 
+                margin-right:0px !important;
+                padding-top: 16px !important;
+                padding-bottom: 16px !important;
+            }
+
+            .result-table {
+                font-size:16px;
+                width: 100%;
             }
         }
 
@@ -174,7 +219,7 @@
                                                         <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="currentColor" />
                                                     </svg>
                                                 </span>
-                                                <input type="text" id="input-search" class="form-control w-md-700px w-350px ps-17 form-search" name="no_reg" placeholder="Registration Number"/>
+                                                <input type="text" id="input-search" class="form-control w-xl-700px w-md-500px w-350px ps-17 form-search" name="no_reg" placeholder="Registration Number" value="{{ $no_reg ?? null }}"/>
                                                 <button type="submit" class="btn position-absolute btn-search px-8">Search</button>
                                             </div>
                                         </div>
@@ -183,7 +228,7 @@
                                                 <div class="card" style="max-width: 760px;">
                                                     <div class="card-body card-result">
                                                         <div class="row">
-                                                            <div class="col-10">
+                                                            <div class="col-12">
                                                                 <div class="d-flex justify-content-center" id="form-result">
                                                                     <div class="d-flex align-items-center">
                                                                         Your Data Found
