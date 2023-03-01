@@ -56,7 +56,7 @@ class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatc
     public function rules(): array
     {
         $model = new PesertaModel();
-        return [
+        if($this->isPreview) return [
             'no_reg'        =>  [
                                 'required',
                                 'alpha_num',
@@ -69,6 +69,7 @@ class PesertaImport implements ToModel, WithValidation, WithHeadingRow, WithBatc
             'origin'        => 'required',
             'event_title'   => 'required'
         ];
+        return [];
     }
 
     public function customValidationAttributes()

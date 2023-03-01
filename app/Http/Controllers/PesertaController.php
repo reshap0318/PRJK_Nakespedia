@@ -166,7 +166,7 @@ class PesertaController extends Controller
     public function homepageData($no_reg)
     {
         $data = PesertaModel::where('no_reg', $no_reg)->first();
-        if(!$data) return redirect(route('homepage.index'))->with('error', 'data not foud');
+        if(!$data) return redirect(route('homepage.index'))->with('error', 'data not found');
 
         return view('pages.homepage.index', ['data' => $data, 'no_reg' => $no_reg]);
     }
@@ -201,7 +201,8 @@ class PesertaController extends Controller
             foreach ($excelDown->getCollection() as $item) {
                 $qrName = generateQrCode($item->no_reg);
                 $zip->addFile(
-                    Storage::path($qrName)
+                    Storage::path($qrName),
+                    $item->no_reg.".png"
                 );
             }
 

@@ -19,6 +19,7 @@ function menuActive(Array $curentPaths, Array $exceptPath = [])
 
 function generateQrCode($no_reg)
 {
+    if(!Storage::directoryExists('qrcode')) Storage::createDirectory('qrcode');
     $qrName = 'qrcode/'.$no_reg.".png";
     if(!Storage::exists($qrName))
     {
